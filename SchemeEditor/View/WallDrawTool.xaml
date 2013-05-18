@@ -1,0 +1,19 @@
+﻿<UserControl x:Class="SchemeEditor.View.WallDrawTool"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             mc:Ignorable="d" 
+             d:DesignHeight="300" d:DesignWidth="300"
+             xmlns:v="clr-namespace:SchemeEditor.View">
+    <Grid>
+        <Path Name="tempWallPath"
+                  StrokeThickness="{Binding WallThickness, RelativeSource={RelativeSource AncestorType=v:Editor}}"
+                  Stroke="Black"
+                  StrokeDashArray="1 1"
+                  Data="{Binding TempWallData, RelativeSource={RelativeSource AncestorType=v:Editor}}"/>
+        <Path Name="selectedPointPath"
+                  Fill="Red"
+                  Data="{Binding SelectedPointData, RelativeSource={RelativeSource AncestorType=v:Editor}}"/>
+    </Grid>
+</UserControl>
