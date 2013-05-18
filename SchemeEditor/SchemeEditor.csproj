@@ -64,6 +64,7 @@
     <Compile Include="Schema\Item.cs" />
     <Compile Include="Schema\JsonHandler.cs" />
     <Compile Include="Schema\Room.cs" />
+    <Compile Include="Schema\Utils.cs" />
     <Compile Include="View\EditorToolKind.cs" />
     <Compile Include="View\IEditorTool.cs" />
     <Compile Include="View\RoomDefineTool.xaml.cs">
@@ -71,6 +72,9 @@
     </Compile>
     <Compile Include="Schema\RoomItem.cs" />
     <Compile Include="Schema\Scheme.cs" />
+    <Compile Include="View\RoomInfo.xaml.cs">
+      <DependentUpon>RoomInfo.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\WallDrawTool.xaml.cs">
       <DependentUpon>WallDrawTool.xaml</DependentUpon>
     </Compile>
@@ -97,6 +101,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="View\RoomDefineTool.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\RoomInfo.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

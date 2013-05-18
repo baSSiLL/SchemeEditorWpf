@@ -1,0 +1,26 @@
+﻿<Window x:Class="SchemeEditor.View.RoomInfo"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="RoomInfo"
+        SizeToContent="WidthAndHeight">
+    <StackPanel Orientation="Vertical"
+                Margin="10,0">
+        <StackPanel Orientation="Horizontal"
+                    Margin="0,10,0,0">
+            <Label Content="Title"/>
+            <TextBox Name="title" Width="300"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Center"
+                    Margin="10">
+            <Button Content="OK"
+                    IsDefault="True"
+                    Width="100"
+                    Click="OK_Click"/>
+            <Button Content="Cancel"
+                    IsCancel="True"
+                    Width="100"
+                    Margin="10,0,0,0"/>
+        </StackPanel>
+    </StackPanel>
+</Window>

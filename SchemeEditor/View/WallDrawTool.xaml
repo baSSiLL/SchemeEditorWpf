@@ -9,7 +9,7 @@
     <Grid>
         <Path Name="tempWallPath"
                   StrokeThickness="{Binding WallThickness, RelativeSource={RelativeSource AncestorType=v:Editor}}"
-                  Stroke="Black"
+                  Stroke="YellowGreen"
                   StrokeDashArray="1 1"
                   Data="{Binding TempWallData, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
         <Path Name="selectedPointPath"

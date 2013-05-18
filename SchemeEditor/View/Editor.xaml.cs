@@ -28,6 +28,7 @@ namespace SchemeEditor.View
             InitializeComponent();
 
             walls.CollectionChanged += walls_CollectionChanged;
+            rooms.CollectionChanged += rooms_CollectionChanged;
 
             wallDrawTool.Init(this);
             roomDefineTool.Init(this);
@@ -99,7 +100,10 @@ namespace SchemeEditor.View
                 if (newTool != activeTool)
                 {
                     if (activeTool != null)
+                    {
+                        activeTool.StopEditing();
                         activeTool.Visibility = Visibility.Hidden;
+                    }
 
                     activeTool = newTool;
 
@@ -112,6 +116,14 @@ namespace SchemeEditor.View
         private bool HasActiveTool
         {
             get { return activeTool != null; }
+        }
+
+        public void Accept()
+        {
+            if (HasActiveTool)
+            {
+                activeTool.Accept();
+            }
         }
 
         public static readonly DependencyProperty BackgroundImageProperty =
@@ -206,6 +218,7 @@ namespace SchemeEditor.View
                 scale = value;
                 var scaleTransform = new ScaleTransform { ScaleX = scale, ScaleY = scale };
                 background.LayoutTransform = scaleTransform;
+                roomVisuals.LayoutTransform = scaleTransform;
                 wallsPath.LayoutTransform = scaleTransform;
                 wallDrawTool.LayoutTransform = scaleTransform;
                 roomDefineTool.LayoutTransform = scaleTransform;
@@ -232,6 +245,17 @@ namespace SchemeEditor.View
             UpdateWallsPath();
         }
 
+        public IList<Room> Rooms
+        {
+            get { return rooms; }
+        }
+        private readonly ObservableCollection<Room> rooms = new ObservableCollection<Room>();
+
+        void rooms_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            UpdateRoomVisuals();
+        }
+
         public static Geometry BuildWallsGeometry(IEnumerable<Wall> walls)
         {
             var sb = new StringBuilder();
@@ -246,6 +270,44 @@ namespace SchemeEditor.View
         private void UpdateWallsPath()
         {
             WallsPathData = BuildWallsGeometry(Walls);
+        }
+
+        public static Geometry BuildRoomGeometry(Room room)
+        {
+            if (room.Points == null)
+                return null;
+
+            var points = room.Points.Where(p => p.X >= 0 && p.Y >= 0).ToList();
+            var sb = new StringBuilder();
+            sb.AppendFormat(CultureInfo.InvariantCulture, "M {0},{1}", points[0].X, points[0].Y);
+            foreach (var p in points.Skip(1))
+            {
+                sb.AppendFormat(CultureInfo.InvariantCulture, " L {0},{1}", p.X, p.Y);
+            }
+
+            return Geometry.Parse(sb.ToString());
+        }
+
+        private void UpdateRoomVisuals()
+        {
+            roomVisuals.Children.Clear();
+
+            foreach (var room in Rooms)
+            {
+                roomVisuals.Children.Add(BuildRoomVisual(room));
+            }
+        }
+
+        private static UIElement BuildRoomVisual(Room room)
+        {
+            var path = new Path
+            {
+                Fill = new SolidColorBrush(room.Color) { Opacity = 0.5 },
+                Data = BuildRoomGeometry(room),
+                ToolTip = room.Title
+            };
+
+            return path;
         }
 
         private IEditorTool activeTool;

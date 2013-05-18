@@ -16,6 +16,7 @@ namespace SchemeEditor.View
         bool MouseUp(Point position);
         bool KeyDown(Key key);
         void StopEditing();
+        void Accept();
         Visibility Visibility { get; set; }
     }
 }

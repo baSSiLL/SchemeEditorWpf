@@ -66,6 +66,10 @@ namespace SchemeEditor.View
             LastPoint = null;
         }
 
+        public void Accept()
+        {
+        }
+
         public bool MouseDown(Point pos)
         {
             PlaceWall(pos);

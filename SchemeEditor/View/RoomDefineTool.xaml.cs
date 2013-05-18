@@ -12,6 +12,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using SchemeEditor.Schema;
 
 namespace SchemeEditor.View
 {
@@ -51,6 +52,15 @@ namespace SchemeEditor.View
             set { SetValue(SelectedWallThicknessProperty, value); }
         }
 
+        public static readonly DependencyProperty RoomDataProperty =
+            DependencyProperty.Register("RoomData", typeof(Geometry), typeof(RoomDefineTool));
+
+        public Geometry RoomData
+        {
+            get { return (Geometry)GetValue(RoomDataProperty); }
+            set { SetValue(RoomDataProperty, value); }
+        }
+
         public static readonly DependencyProperty SelectionDataProperty =
             DependencyProperty.Register("SelectionData", typeof(Geometry), typeof(RoomDefineTool));
 
@@ -68,13 +78,22 @@ namespace SchemeEditor.View
         public new bool MouseDown(Point position)
         {
             startPoint = position;
+            if (room == null)
+            {
+                room = new Room();
+                previouslySelectedWalls.Clear();
+            }
             return true;
         }
 
         public new bool MouseUp(Point position)
         {
-            if (startPoint != null)
+            if (room != null && startPoint != null)
             {
+                var selectedWalls = GetSelectedWalls(position);
+                UpdateSelectionData(position);
+                previouslySelectedWalls.AddRange(selectedWalls);
+
                 startPoint = null;
                 SelectionData = null;
                 return true;
@@ -87,7 +106,7 @@ namespace SchemeEditor.View
 
         public new bool MouseMove(Point position)
         {
-            if (startPoint != null)
+            if (room != null && startPoint != null)
             {
                 UpdateSelectionData(position);
                 return true;
@@ -106,7 +125,27 @@ namespace SchemeEditor.View
         public void StopEditing()
         {
             startPoint = null;
+            room = null;
             SelectionData = null;
+            SelectedWallsData = null;
+            RoomData = null;
+        }
+
+        public void Accept()
+        {
+            if (RoomData != null)
+            {
+                var roomInfo = new RoomInfo();
+                var result = roomInfo.ShowDialog();
+                if (result == true)
+                {
+                    room.Color = Colors.YellowGreen;
+                    room.Title = roomInfo.Title;
+                    editor.Rooms.Add(room);
+                }
+            }
+
+            StopEditing();
         }
 
         private void UpdateSelectionData(Point position)
@@ -116,10 +155,26 @@ namespace SchemeEditor.View
             SelectionData = geometry;
 
             var selectedWalls = editor.Walls.Where(
-                w => geometry.Rect.Contains(w.Start) && geometry.Rect.Contains(w.End));
+                w => geometry.Rect.Contains(w.Start) && geometry.Rect.Contains(w.End)).
+                Concat(previouslySelectedWalls).Distinct().ToList();
             SelectedWallsData = Editor.BuildWallsGeometry(selectedWalls);
+
+            if (selectedWalls.Skip(1).Any())
+            {
+                room.SetWalls(selectedWalls);
+                RoomData = Editor.BuildRoomGeometry(room);
+            }
+        }
+
+        private IEnumerable<Wall> GetSelectedWalls(Point position)
+        {
+            var rect = new Rect(startPoint.Value, position);
+            return editor.Walls.Where(
+                w => rect.Contains(w.Start) && rect.Contains(w.End));
         }
 
         private Point? startPoint;
+        private List<Wall> previouslySelectedWalls = new List<Wall>();
+        private Room room;
     }
 }

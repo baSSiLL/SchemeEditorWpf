@@ -17,9 +17,10 @@
                    HorizontalAlignment="Left"
                    VerticalAlignment="Top">
             </Image>
+            <Grid Name="roomVisuals"/>
             <Path Name="wallsPath"
                   StrokeThickness="{Binding WallThickness, RelativeSource={RelativeSource AncestorType=UserControl}}"
-                  Stroke="Black"
+                  Stroke="YellowGreen"
                   Data="{Binding WallsPathData, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
             <v:WallDrawTool x:Name="wallDrawTool" 
                             Visibility="Hidden"/>
