@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -25,7 +26,13 @@ namespace SchemeEditor.View
         public Editor()
         {
             InitializeComponent();
+
+            walls.CollectionChanged += walls_CollectionChanged;
+
+            wallDrawTool.Init(this);
+
             Scale = 1;
+            activeTool = wallDrawTool;
         }
 
         public bool GlobalKeyDown(KeyEventArgs args)
@@ -33,7 +40,7 @@ namespace SchemeEditor.View
             switch (args.Key)
             {
                 case Key.Escape:
-                    StopEditing();
+                    activeTool.StopEditing();
                     break;
                 case Key.OemMinus:
                     ScaleDelta(-120);
@@ -42,16 +49,10 @@ namespace SchemeEditor.View
                     ScaleDelta(120);
                     break;
                 default:
-                    return false;
+                    return activeTool.KeyDown(args.Key);
             }
 
             return true;
-        }
-
-        private void StopEditing()
-        {
-            TempWallData = null;
-            LastPoint = null;
         }
 
         public static readonly DependencyProperty BackgroundImageProperty =
@@ -81,33 +82,6 @@ namespace SchemeEditor.View
             set { SetValue(WallsPathDataProperty, value); }
         }
 
-        public static readonly DependencyProperty TempWallDataProperty =
-            DependencyProperty.Register("TempWallData", typeof(LineGeometry), typeof(Editor));
-
-        public LineGeometry TempWallData
-        {
-            get { return (LineGeometry)GetValue(TempWallDataProperty); }
-            set { SetValue(TempWallDataProperty, value); }
-        }
-
-        public static readonly DependencyProperty SelectedPointDataProperty =
-            DependencyProperty.Register("SelectedPointData", typeof(Geometry), typeof(Editor));
-
-        public Geometry SelectedPointData
-        {
-            get { return (Geometry)GetValue(SelectedPointDataProperty); }
-            set { SetValue(SelectedPointDataProperty, value); }
-        }
-
-        public static readonly DependencyProperty SelectedPointRadiusProperty =
-            DependencyProperty.Register("SelectedPointRadius", typeof(double), typeof(Editor));
-
-        public double SelectedPointRadius
-        {
-            get { return (double)GetValue(SelectedPointRadiusProperty); }
-            set { SetValue(SelectedPointRadiusProperty, value); }
-        }
-
         protected override void OnPreviewMouseWheel(MouseWheelEventArgs e)
         {
             base.OnPreviewMouseWheel(e);
@@ -125,8 +99,7 @@ namespace SchemeEditor.View
             if (pos.X >= 0 && pos.X < BackgroundImage.Width &&
                 pos.Y >= 0 && pos.Y < BackgroundImage.Height)
             {
-                PlaceWall(pos);
-                e.Handled = true;
+                e.Handled = activeTool.MouseDown(pos);
             }
         }
 
@@ -136,8 +109,7 @@ namespace SchemeEditor.View
             if (pos.X >= 0 && pos.X < BackgroundImage.Width &&
                 pos.Y >= 0 && pos.Y < BackgroundImage.Height)
             {
-                PlaceTempWall(pos);
-                e.Handled = true;
+                e.Handled = activeTool.MouseMove(pos);
             }
         }
 
@@ -148,19 +120,37 @@ namespace SchemeEditor.View
             background.LayoutTransform = new ScaleTransform() { ScaleX = scale, ScaleY = scale };
         }
 
-        private void PlaceWall(Point position)
+        public double Scale
         {
-            if (LastPoint == null)
+            get { return scale; }
+            private set
             {
-                LastPoint = position;
+                scale = value;
+                var scaleTransform = new ScaleTransform { ScaleX = scale, ScaleY = scale };
+                background.LayoutTransform = scaleTransform;
+                wallsPath.LayoutTransform = scaleTransform;
+                wallDrawTool.LayoutTransform = scaleTransform;
+                WallThickness = 3 / scale;
+
+                if (ScaleChanged != null)
+                {
+                    ScaleChanged(this, EventArgs.Empty);
+                }
             }
-            else
-            {
-                walls.Add(new Wall { Start = LastPoint.Value, End = position });
-                UpdateWallsPath();
-                LastPoint = position;
-            }
-            TempWallData = null;
+        }
+        private double scale = 1;
+
+        public event EventHandler ScaleChanged;
+
+        public IList<Wall> Walls
+        {
+            get { return walls; }
+        }
+        private readonly ObservableCollection<Wall> walls = new ObservableCollection<Wall>();
+
+        void walls_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            UpdateWallsPath();
         }
 
         private void UpdateWallsPath()
@@ -174,58 +164,6 @@ namespace SchemeEditor.View
             WallsPathData = Geometry.Parse(sb.ToString());
         }
 
-        private void PlaceTempWall(Point pos)
-        {
-            if (LastPoint != null)
-            {
-                TempWallData = new LineGeometry { StartPoint = LastPoint.Value, EndPoint = pos };
-            }
-        }
-
-        private void UpdateSelectedPoint(Point? point)
-        {
-            Geometry geometry = null;
-            if (point != null)
-            {
-                geometry = new EllipseGeometry
-                {
-                    Center = point.Value,
-                };
-                var binding = new Binding { Path = new PropertyPath("SelectedPointRadius"), Source = this};
-                BindingOperations.SetBinding(geometry, EllipseGeometry.RadiusXProperty, binding);
-                BindingOperations.SetBinding(geometry, EllipseGeometry.RadiusYProperty, binding);
-            }
-
-            SelectedPointData = geometry;
-        }
-
-        private double Scale
-        {
-            get { return scale; }
-            set
-            {
-                scale = value;
-                var scaleTransform = new ScaleTransform { ScaleX = scale, ScaleY = scale };
-                background.LayoutTransform = scaleTransform;
-                wallsPath.LayoutTransform = scaleTransform;
-                wallDrawTool.LayoutTransform = scaleTransform;
-                WallThickness = 3 / scale;
-                SelectedPointRadius = 5 / scale;
-            }
-        }
-        private double scale = 1;
-
-        public Point? LastPoint
-        {
-            get { return lastPoint; }
-            set
-            {
-                lastPoint = value;
-                UpdateSelectedPoint(lastPoint);
-            }
-        }
-        private Point? lastPoint;
-
-        private readonly List<Wall> walls = new List<Wall>();
+        private IEditorTool activeTool;
     }
 }

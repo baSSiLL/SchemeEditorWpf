@@ -11,9 +11,9 @@
                   StrokeThickness="{Binding WallThickness, RelativeSource={RelativeSource AncestorType=v:Editor}}"
                   Stroke="Black"
                   StrokeDashArray="1 1"
-                  Data="{Binding TempWallData, RelativeSource={RelativeSource AncestorType=v:Editor}}"/>
+                  Data="{Binding TempWallData, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
         <Path Name="selectedPointPath"
                   Fill="Red"
-                  Data="{Binding SelectedPointData, RelativeSource={RelativeSource AncestorType=v:Editor}}"/>
+                  Data="{Binding SelectedPointData, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
     </Grid>
 </UserControl>

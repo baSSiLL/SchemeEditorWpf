@@ -7,7 +7,7 @@ using System.Windows;
 
 namespace SchemeEditor.Schema
 {
-    class Wall
+    public class Wall
     {
         public Point Start { get; set; }
         public Point End { get; set; }

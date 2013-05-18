@@ -54,6 +54,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Schema\Room.cs" />
+    <Compile Include="View\IEditorTool.cs" />
     <Compile Include="View\WallDrawTool.xaml.cs">
       <DependentUpon>WallDrawTool.xaml</DependentUpon>
     </Compile>

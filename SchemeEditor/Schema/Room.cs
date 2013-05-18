@@ -8,11 +8,11 @@ using System.Windows.Media;
 
 namespace SchemeEditor.Schema
 {
-    class Room
+    public class Room
     {
-        public string Title;
-        public string Id;
-        public Color Color;
-        public Point[] Points;
+        public string Title { get; set; }
+        public string Id { get; set; }
+        public Color Color { get; set; }
+        public Point[] Points { get; set; }
     }
 }
