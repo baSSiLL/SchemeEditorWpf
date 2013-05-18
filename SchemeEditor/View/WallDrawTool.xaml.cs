@@ -72,6 +72,11 @@ namespace SchemeEditor.View
             return true;
         }
 
+        public bool MouseUp(Point pos)
+        {
+            return false;
+        }
+
         public bool MouseMove(Point pos)
         {
             PlaceTempWall(pos);

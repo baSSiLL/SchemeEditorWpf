@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Controls.Primitives;
 using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
@@ -34,6 +35,29 @@ namespace SchemeEditor
             if (editor.GlobalKeyDown(e))
             {
                 e.Handled = true;
+            }
+        }
+
+        private void WallTool_Checked(object sender, RoutedEventArgs e)
+        {
+            editor.ActiveToolKind = View.EditorToolKind.WallDraw;
+            UpdateToolsState(sender);
+        }
+
+        private void RoomTool_Checked(object sender, RoutedEventArgs e)
+        {
+            editor.ActiveToolKind = View.EditorToolKind.RoomDefine;
+            UpdateToolsState(sender);
+        }
+
+        private void UpdateToolsState(object sender)
+        {
+            foreach (var toolButton in tools.Children.OfType<ToggleButton>())
+            {
+                if (toolButton != sender)
+                {
+                    toolButton.IsChecked = false;
+                }
             }
         }
     }

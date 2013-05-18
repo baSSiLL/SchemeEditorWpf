@@ -1,0 +1,125 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+
+namespace SchemeEditor.View
+{
+    /// <summary>
+    /// Interaction logic for RoomDefineTool.xaml
+    /// </summary>
+    public partial class RoomDefineTool : UserControl, IEditorTool
+    {
+        public RoomDefineTool()
+        {
+            InitializeComponent();
+        }
+
+        private Editor editor;
+
+        public void Init(Editor editor)
+        {
+            this.editor = editor;
+            editor.ScaleChanged += editor_ScaleChanged;
+        }
+
+        public static readonly DependencyProperty SelectedWallsDataProperty =
+            DependencyProperty.Register("SelectedWallsData", typeof(Geometry), typeof(RoomDefineTool));
+
+        public Geometry SelectedWallsData
+        {
+            get { return (Geometry)GetValue(SelectedWallsDataProperty); }
+            set { SetValue(SelectedWallsDataProperty, value); }
+        }
+
+        public static readonly DependencyProperty SelectedWallThicknessProperty =
+            DependencyProperty.Register("SelectedWallThickness", typeof(double), typeof(RoomDefineTool));
+
+        public double SelectedWallThickness
+        {
+            get { return (double)GetValue(SelectedWallThicknessProperty); }
+            set { SetValue(SelectedWallThicknessProperty, value); }
+        }
+
+        public static readonly DependencyProperty SelectionDataProperty =
+            DependencyProperty.Register("SelectionData", typeof(Geometry), typeof(RoomDefineTool));
+
+        public Geometry SelectionData
+        {
+            get { return (Geometry)GetValue(SelectionDataProperty); }
+            set { SetValue(SelectionDataProperty, value); }
+        }
+
+        void editor_ScaleChanged(object sender, EventArgs e)
+        {
+            SelectedWallThickness = 4 / editor.Scale;
+        }
+
+        public new bool MouseDown(Point position)
+        {
+            startPoint = position;
+            return true;
+        }
+
+        public new bool MouseUp(Point position)
+        {
+            if (startPoint != null)
+            {
+                startPoint = null;
+                SelectionData = null;
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public new bool MouseMove(Point position)
+        {
+            if (startPoint != null)
+            {
+                UpdateSelectionData(position);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+
+        public new bool KeyDown(Key key)
+        {
+            return false;
+        }
+
+        public void StopEditing()
+        {
+            startPoint = null;
+            SelectionData = null;
+        }
+
+        private void UpdateSelectionData(Point position)
+        {
+            var geometry = new RectangleGeometry();
+            geometry.Rect = new Rect(startPoint.Value, position);
+            SelectionData = geometry;
+
+            var selectedWalls = editor.Walls.Where(
+                w => geometry.Rect.Contains(w.Start) && geometry.Rect.Contains(w.End));
+            SelectedWallsData = Editor.BuildWallsGeometry(selectedWalls);
+        }
+
+        private Point? startPoint;
+    }
+}

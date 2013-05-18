@@ -13,7 +13,9 @@ namespace SchemeEditor.View
         void Init(Editor editor);
         bool MouseDown(Point position);
         bool MouseMove(Point position);
+        bool MouseUp(Point position);
         bool KeyDown(Key key);
         void StopEditing();
+        Visibility Visibility { get; set; }
     }
 }

@@ -8,11 +8,18 @@
             <MenuItem Header="Open Graphic Scheme"
                       Command="{Binding OpenBackgroundCommand}"/>
         </Menu>
-        <StackPanel DockPanel.Dock="Top"
+        <StackPanel Name="tools"
+                    DockPanel.Dock="Top"
                     Orientation="Horizontal"
                     Margin="0,10">
-            <ToggleButton ToolTip="Select">Select</ToggleButton>
-            <ToggleButton ToolTip="Draw walls">Wall</ToggleButton>
+            <ToggleButton ToolTip="Draw walls"
+                          Checked="WallTool_Checked">
+                Wall
+            </ToggleButton>
+            <ToggleButton ToolTip="Define rooms"
+                          Checked="RoomTool_Checked">
+                Room
+            </ToggleButton>
         </StackPanel>
         <v:Editor x:Name="editor"
                   BackgroundImage="{Binding BackgroundImage}"/>

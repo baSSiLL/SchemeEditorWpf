@@ -30,9 +30,9 @@ namespace SchemeEditor.View
             walls.CollectionChanged += walls_CollectionChanged;
 
             wallDrawTool.Init(this);
+            roomDefineTool.Init(this);
 
             Scale = 1;
-            activeTool = wallDrawTool;
         }
 
         public bool GlobalKeyDown(KeyEventArgs args)
@@ -40,7 +40,14 @@ namespace SchemeEditor.View
             switch (args.Key)
             {
                 case Key.Escape:
-                    activeTool.StopEditing();
+                    if (HasActiveTool)
+                    {
+                        activeTool.StopEditing();
+                    }
+                    else
+                    {
+                        return false;
+                    }
                     break;
                 case Key.OemMinus:
                     ScaleDelta(-120);
@@ -49,10 +56,62 @@ namespace SchemeEditor.View
                     ScaleDelta(120);
                     break;
                 default:
-                    return activeTool.KeyDown(args.Key);
+                    if (HasActiveTool)
+                    {
+                        return activeTool.KeyDown(args.Key);
+                    }
+                    else
+                    {
+                        return false;
+                    }
             }
 
             return true;
+        }
+
+        public EditorToolKind ActiveToolKind
+        {
+            get 
+            {
+                if (activeTool == wallDrawTool)
+                    return EditorToolKind.WallDraw;
+                else if (activeTool == roomDefineTool)
+                    return EditorToolKind.RoomDefine;
+                else
+                    return EditorToolKind.None;
+            }
+            set
+            {
+                IEditorTool newTool;
+                switch (value)
+                {
+                    case EditorToolKind.WallDraw:
+                        newTool = wallDrawTool;
+                        break;
+                    case EditorToolKind.RoomDefine:
+                        newTool = roomDefineTool;
+                        break;
+                    default:
+                        newTool = null;
+                        break;
+                }
+
+                if (newTool != activeTool)
+                {
+                    if (activeTool != null)
+                        activeTool.Visibility = Visibility.Hidden;
+
+                    activeTool = newTool;
+
+                    if (activeTool != null)
+                        activeTool.Visibility = Visibility.Visible;
+                }
+            }
+        }
+
+        private bool HasActiveTool
+        {
+            get { return activeTool != null; }
         }
 
         public static readonly DependencyProperty BackgroundImageProperty =
@@ -95,6 +154,9 @@ namespace SchemeEditor.View
 
         private void Content_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            if (!HasActiveTool)
+                return;
+
             var pos = e.GetPosition(background);
             if (pos.X >= 0 && pos.X < BackgroundImage.Width &&
                 pos.Y >= 0 && pos.Y < BackgroundImage.Height)
@@ -103,8 +165,24 @@ namespace SchemeEditor.View
             }
         }
 
+        private void Content_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
+        {
+            if (!HasActiveTool)
+                return;
+
+            var pos = e.GetPosition(background);
+            if (pos.X >= 0 && pos.X < BackgroundImage.Width &&
+                pos.Y >= 0 && pos.Y < BackgroundImage.Height)
+            {
+                e.Handled = activeTool.MouseUp(pos);
+            }
+        }
+
         private void Content_MouseMove(object sender, MouseEventArgs e)
         {
+            if (!HasActiveTool)
+                return;
+
             var pos = e.GetPosition(background);
             if (pos.X >= 0 && pos.X < BackgroundImage.Width &&
                 pos.Y >= 0 && pos.Y < BackgroundImage.Height)
@@ -130,6 +208,7 @@ namespace SchemeEditor.View
                 background.LayoutTransform = scaleTransform;
                 wallsPath.LayoutTransform = scaleTransform;
                 wallDrawTool.LayoutTransform = scaleTransform;
+                roomDefineTool.LayoutTransform = scaleTransform;
                 WallThickness = 3 / scale;
 
                 if (ScaleChanged != null)
@@ -153,7 +232,7 @@ namespace SchemeEditor.View
             UpdateWallsPath();
         }
 
-        private void UpdateWallsPath()
+        public static Geometry BuildWallsGeometry(IEnumerable<Wall> walls)
         {
             var sb = new StringBuilder();
             foreach (var wall in walls)
@@ -161,7 +240,12 @@ namespace SchemeEditor.View
                 sb.AppendFormat(CultureInfo.InvariantCulture, " M {0},{1} L {2},{3}",
                     wall.Start.X, wall.Start.Y, wall.End.X, wall.End.Y);
             }
-            WallsPathData = Geometry.Parse(sb.ToString());
+            return Geometry.Parse(sb.ToString());
+        }
+
+        private void UpdateWallsPath()
+        {
+            WallsPathData = BuildWallsGeometry(Walls);
         }
 
         private IEditorTool activeTool;

@@ -9,6 +9,7 @@
     <ScrollViewer HorizontalScrollBarVisibility="Auto"
                   VerticalScrollBarVisibility="Auto">
         <Grid PreviewMouseLeftButtonDown="Content_PreviewMouseLeftButtonDown"
+              PreviewMouseLeftButtonUp="Content_PreviewMouseLeftButtonUp"
               MouseMove="Content_MouseMove">
             <Image Name="background"
                    Source="{Binding BackgroundImage, RelativeSource={RelativeSource AncestorType=UserControl}}"
@@ -20,7 +21,10 @@
                   StrokeThickness="{Binding WallThickness, RelativeSource={RelativeSource AncestorType=UserControl}}"
                   Stroke="Black"
                   Data="{Binding WallsPathData, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
-            <v:WallDrawTool x:Name="wallDrawTool"/>
+            <v:WallDrawTool x:Name="wallDrawTool" 
+                            Visibility="Hidden"/>
+            <v:RoomDefineTool x:Name="roomDefineTool"
+                              Visibility="Hidden"/>
         </Grid>
     </ScrollViewer>
 </UserControl>
