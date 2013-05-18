@@ -28,7 +28,27 @@ namespace SchemeEditor.View
             Scale = 1;
         }
 
-        public void StopEditing()
+        public bool GlobalKeyDown(KeyEventArgs args)
+        {
+            switch (args.Key)
+            {
+                case Key.Escape:
+                    StopEditing();
+                    break;
+                case Key.OemMinus:
+                    ScaleDelta(-120);
+                    break;
+                case Key.OemPlus:
+                    ScaleDelta(120);
+                    break;
+                default:
+                    return false;
+            }
+
+            return true;
+        }
+
+        private void StopEditing()
         {
             TempWallData = null;
             LastPoint = null;

@@ -31,11 +31,9 @@ namespace SchemeEditor
         {
             base.OnKeyDown(e);
 
-            switch (e.Key)
+            if (editor.GlobalKeyDown(e))
             {
-                case Key.Escape:
-                    editor.StopEditing();
-                    break;
+                e.Handled = true;
             }
         }
     }

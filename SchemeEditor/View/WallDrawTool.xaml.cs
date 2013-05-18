@@ -25,8 +25,9 @@ namespace SchemeEditor.View
             InitializeComponent();
         }
 
-        public void Init()
+        public void Init(Editor editor)
         {
+
         }
     }
 }
