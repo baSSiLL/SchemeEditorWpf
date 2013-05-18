@@ -1,4 +1,5 @@
 ﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,38 +9,30 @@ using System.Text;
 
 namespace SchemeEditor.Schema
 {
-    static class JsonHandler
+    public static class JsonHandler
     {
-        static void DoActionInBackground(Action action, Action onFinish)
+
+        public static void WriteJson(Scheme scheme, string jsonPath)
         {
-            BackgroundWorker w = new BackgroundWorker();
-            w.RunWorkerCompleted += delegate(object sender, RunWorkerCompletedEventArgs e)
-            {
-                onFinish();
-            };
+            Dictionary<string, object> dict = scheme.ToJsonObject();
+            string jsonStr = JsonConvert.SerializeObject(dict);
 
-            w.DoWork += delegate(object sender, DoWorkEventArgs e)
-            {
-                action();
-            };
-
-            w.RunWorkerAsync();
+            Console.WriteLine("json path: {0}", jsonPath);
+            using (StreamWriter w = new StreamWriter(jsonPath))
+                w.Write(jsonStr);
         }
 
-        static void WriteJson(Scheme scheme, Action onFinish)
+        public static Scheme ReadJson(string jsonPath)
         {
-            DoActionInBackground(() =>
-            {
-                Dictionary<string, object> dict = scheme.ToJsonObject();
-                string jsonStr = JsonConvert.SerializeObject(dict);
+            string jsonStr;
+            using (StreamReader s = new StreamReader(jsonPath))
+                jsonStr = s.ReadToEnd();
 
-                string jsonName = "floor.json";
-                string jsonPath = Path.Combine(Path.GetTempPath(), jsonName);
-                Console.WriteLine("json path: {0}", jsonPath);
-                using (StreamWriter w = new StreamWriter(jsonPath))
-                    w.Write(jsonStr);
-            },
-            onFinish);
+            JContainer json = (JContainer)JsonConvert.DeserializeObject(jsonStr);
+            var scheme = new Scheme();
+            scheme.FillWithJsonObject(json, scheme);
+
+            return scheme;
         }
     }
 }

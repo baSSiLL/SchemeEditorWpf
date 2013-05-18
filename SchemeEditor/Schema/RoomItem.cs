@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SchemeEditor.Schema
 {
-    class RoomItem : Item
+    public class RoomItem : Item
     {
     }
 }

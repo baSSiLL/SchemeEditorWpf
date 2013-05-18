@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json.Linq;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace SchemeEditor.Schema
 {
-    abstract class Item : IJsonObject
+    public abstract class Item : IJsonObject
     {
         public string Title { get; set; }
         public Room Room { get; set; }
@@ -24,6 +25,16 @@ namespace SchemeEditor.Schema
                 { "image", Image },
                 { "visible", Visible }
             };
+        }
+
+
+        public virtual void FillWithJsonObject(JContainer dict, Scheme scheme)
+        {
+            Title = (string)dict["title"];
+            Room = scheme.Rooms.Single(r => r.Id.Equals(dict["room"]));
+            QRCode = (string)dict[@"qr_code"];
+            Image = (string)dict["image"];
+            Visible = (bool)dict[@"visible"];          
         }
     }
 }
