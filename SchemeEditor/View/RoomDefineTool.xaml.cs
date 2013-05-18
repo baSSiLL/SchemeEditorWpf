@@ -136,10 +136,11 @@ namespace SchemeEditor.View
             if (RoomData != null)
             {
                 var roomInfo = new RoomInfo();
+                roomInfo.Color = Colors.YellowGreen;
                 var result = roomInfo.ShowDialog();
                 if (result == true)
                 {
-                    room.Color = Colors.YellowGreen;
+                    room.Color = roomInfo.Color;
                     room.Title = roomInfo.Title;
                     editor.Rooms.Add(room);
                 }
