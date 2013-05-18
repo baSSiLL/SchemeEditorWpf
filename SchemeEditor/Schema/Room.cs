@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Media;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace SchemeEditor.Schema
 {
@@ -20,6 +21,39 @@ namespace SchemeEditor.Schema
         public string Id { get; private set; }
         public Color Color { get; set; }
         public Point[] Points { get; set; }
+
+        public List<Wall> GetWalls()
+        {
+            var res = new List<Wall>();
+            Point prev = new Point();
+            bool door = false;
+            foreach (var p in Points)
+            {
+                Point cur = p;
+                if (prev.X == 0 && prev.Y == 0)
+                {
+                    prev = p;
+                }
+                else if (cur.X < 0 && cur.Y < 0)
+                {
+                    door = true;
+                }
+                else
+                {
+                    if (!door)
+                    {
+                        var wall = new Wall();
+                        wall.Start = prev;
+                        wall.End = cur;
+                        res.Add(wall);
+                    }
+                    prev = cur;
+                    door = false;
+                }
+            }
+
+            return res;
+        }
 
         public void SetWalls(IEnumerable<Wall> walls)
         {
@@ -119,6 +153,15 @@ namespace SchemeEditor.Schema
                 { "color", GetHexColor() },
                 { "points", Points.Select(p => new[] { p.X, p.Y }) }
             };
+        }
+
+
+        public void FillWithJsonObject(JContainer dict, Scheme scheme)
+        {
+            Title = (string)dict["title"];
+            Id = (string)dict["id"];
+            Color = (Color)ColorConverter.ConvertFromString((string)dict["color"]);
+            Points = (dict["points"]).Select(p => new Point((double)p[0], (double)p[1])).ToArray();
         }
     }
 }
