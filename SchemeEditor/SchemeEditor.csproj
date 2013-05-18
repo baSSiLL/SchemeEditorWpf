@@ -34,6 +34,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>E:\SchemeEditorWpf\Libs\SharpZipLib\ICSharpCode.SharpZipLib.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>E:\SchemeEditorWpf\Libs\Json.Net\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -53,7 +59,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Schema\CoordinateItem.cs" />
+    <Compile Include="Schema\IJsonObject.cs" />
+    <Compile Include="Schema\Item.cs" />
+    <Compile Include="Schema\JsonHandler.cs" />
     <Compile Include="Schema\Room.cs" />
+    <Compile Include="Schema\RoomItem.cs" />
+    <Compile Include="Schema\Scheme.cs" />
     <Compile Include="View\WallDrawTool.xaml.cs">
       <DependentUpon>WallDrawTool.xaml</DependentUpon>
     </Compile>
