@@ -9,7 +9,7 @@ using Newtonsoft.Json;
 
 namespace SchemeEditor.Schema
 {
-    public class Room : IJsonObject
+    class Room : IJsonObject
     {
         public string Title { get; set; }
         public string Id { get; set; }
