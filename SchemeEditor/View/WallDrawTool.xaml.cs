@@ -68,26 +68,29 @@ namespace SchemeEditor.View
 
         public void Accept()
         {
+            StopEditing();
         }
 
-        public bool MouseDown(Point pos)
+        public new bool MouseDown(Point pos)
         {
+            pos = CorrectPosition(pos);
             PlaceWall(pos);
             return true;
         }
 
-        public bool MouseUp(Point pos)
+        public new bool MouseUp(Point pos)
         {
             return false;
         }
 
-        public bool MouseMove(Point pos)
+        public new bool MouseMove(Point pos)
         {
+            pos = CorrectPosition(pos);
             PlaceTempWall(pos);
             return true;
         }
 
-        public bool KeyDown(Key key)
+        public new bool KeyDown(Key key)
         {
             return false;
         }
@@ -137,6 +140,48 @@ namespace SchemeEditor.View
             }
 
             SelectedPointData = geometry;
+        }
+
+        private Point CorrectPosition(Point pos)
+        {
+            if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
+            {
+                var diff = Point.Subtract(pos, LastPoint.Value);
+                if (Math.Abs(diff.X) < Math.Abs(diff.Y))
+                {
+                    pos.X = LastPoint.Value.X;
+                }
+                else
+                {
+                    pos.Y = LastPoint.Value.Y;
+                }
+            }
+            else
+            {
+                var minDist = double.MaxValue;
+                Point? closestPoint = null;
+                foreach (var w in editor.Walls)
+                {
+                    var dist = Utils.GetPointsDistance(w.Start, pos);
+                    if (dist < minDist)
+                    {
+                        minDist = dist;
+                        closestPoint = w.Start;
+                    }
+                    dist = Utils.GetPointsDistance(w.End, pos);
+                    if (dist < minDist)
+                    {
+                        minDist = dist;
+                        closestPoint = w.End;
+                    }
+                }
+                if (minDist * editor.Scale < 10)
+                {
+                    pos = closestPoint.Value;
+                }
+            }
+
+            return pos;
         }
 
         public Point? LastPoint
