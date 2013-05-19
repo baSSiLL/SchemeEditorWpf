@@ -93,13 +93,28 @@ namespace SchemeEditor.View
             }
             else
             {
-                return false;
+                pos = CorrectPosition(pos);
+                UpdateSelectedPoint(pos);
+                return true;
             }
 
         }
 
         public new bool KeyDown(Key key)
         {
+            switch (key)
+            {
+                case Key.Z:
+                    if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
+                    {
+                        if (editor.Walls.Any())
+                        {
+                            editor.Walls.RemoveAt(editor.Walls.Count - 1);
+                        }
+                        return true;
+                    }
+                    break;
+            }
             return false;
         }
 
@@ -154,42 +169,45 @@ namespace SchemeEditor.View
         {
             if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
             {
-                var diff = Point.Subtract(pos, LastPoint.Value);
-                if (Math.Abs(diff.X) < Math.Abs(diff.Y))
+                if (LastPoint != null)
                 {
-                    pos.X = LastPoint.Value.X;
-                    var wall = editor.Walls.FirstOrDefault(
-                        w => Math.Abs(w.Start.Y - pos.Y) * editor.Scale < 5);
-                    if (wall != null)
+                    var diff = Point.Subtract(pos, LastPoint.Value);
+                    if (Math.Abs(diff.X) < Math.Abs(diff.Y))
                     {
-                        pos.Y = wall.Start.Y;
-                    }
-                    else
-                    {
-                        wall = editor.Walls.FirstOrDefault(
-                            w => Math.Abs(w.End.Y - pos.Y) * editor.Scale < 5);
+                        pos.X = LastPoint.Value.X;
+                        var wall = editor.Walls.FirstOrDefault(
+                            w => Math.Abs(w.Start.Y - pos.Y) * editor.Scale < 10);
                         if (wall != null)
                         {
-                            pos.Y = wall.End.Y;
+                            pos.Y = wall.Start.Y;
+                        }
+                        else
+                        {
+                            wall = editor.Walls.FirstOrDefault(
+                                w => Math.Abs(w.End.Y - pos.Y) * editor.Scale < 10);
+                            if (wall != null)
+                            {
+                                pos.Y = wall.End.Y;
+                            }
                         }
                     }
-                }
-                else
-                {
-                    pos.Y = LastPoint.Value.Y;
-                    var wall = editor.Walls.FirstOrDefault(
-                        w => Math.Abs(w.Start.X - pos.X) * editor.Scale < 5);
-                    if (wall != null)
-                    {
-                        pos.X = wall.Start.X;
-                    }
                     else
                     {
-                        wall = editor.Walls.FirstOrDefault(
-                            w => Math.Abs(w.End.X - pos.X) * editor.Scale < 5);
+                        pos.Y = LastPoint.Value.Y;
+                        var wall = editor.Walls.FirstOrDefault(
+                            w => Math.Abs(w.Start.X - pos.X) * editor.Scale < 10);
                         if (wall != null)
                         {
-                            pos.X = wall.End.X;
+                            pos.X = wall.Start.X;
+                        }
+                        else
+                        {
+                            wall = editor.Walls.FirstOrDefault(
+                                w => Math.Abs(w.End.X - pos.X) * editor.Scale < 10);
+                            if (wall != null)
+                            {
+                                pos.X = wall.End.X;
+                            }
                         }
                     }
                 }
