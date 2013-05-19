@@ -158,10 +158,40 @@ namespace SchemeEditor.View
                 if (Math.Abs(diff.X) < Math.Abs(diff.Y))
                 {
                     pos.X = LastPoint.Value.X;
+                    var wall = editor.Walls.FirstOrDefault(
+                        w => Math.Abs(w.Start.Y - pos.Y) * editor.Scale < 5);
+                    if (wall != null)
+                    {
+                        pos.Y = wall.Start.Y;
+                    }
+                    else
+                    {
+                        wall = editor.Walls.FirstOrDefault(
+                            w => Math.Abs(w.End.Y - pos.Y) * editor.Scale < 5);
+                        if (wall != null)
+                        {
+                            pos.Y = wall.End.Y;
+                        }
+                    }
                 }
                 else
                 {
                     pos.Y = LastPoint.Value.Y;
+                    var wall = editor.Walls.FirstOrDefault(
+                        w => Math.Abs(w.Start.X - pos.X) * editor.Scale < 5);
+                    if (wall != null)
+                    {
+                        pos.X = wall.Start.X;
+                    }
+                    else
+                    {
+                        wall = editor.Walls.FirstOrDefault(
+                            w => Math.Abs(w.End.X - pos.X) * editor.Scale < 5);
+                        if (wall != null)
+                        {
+                            pos.X = wall.End.X;
+                        }
+                    }
                 }
             }
             else
