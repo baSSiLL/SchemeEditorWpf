@@ -69,6 +69,12 @@
     <Compile Include="Schema\Utils.cs" />
     <Compile Include="View\EditorToolKind.cs" />
     <Compile Include="View\IEditorTool.cs" />
+    <Compile Include="View\ItemCreateTool.xaml.cs">
+      <DependentUpon>ItemCreateTool.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="View\NewItem.xaml.cs">
+      <DependentUpon>NewItem.xaml</DependentUpon>
+    </Compile>
     <Compile Include="View\RoomDefineTool.xaml.cs">
       <DependentUpon>RoomDefineTool.xaml</DependentUpon>
     </Compile>
@@ -102,6 +108,14 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="View\ItemCreateTool.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="View\NewItem.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="View\RoomDefineTool.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

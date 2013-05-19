@@ -22,9 +22,12 @@
                   StrokeThickness="{Binding WallThickness, RelativeSource={RelativeSource AncestorType=UserControl}}"
                   Stroke="YellowGreen"
                   Data="{Binding WallsPathData, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
+            <Grid Name="itemVisuals"/>
             <v:WallDrawTool x:Name="wallDrawTool" 
                             Visibility="Hidden"/>
             <v:RoomDefineTool x:Name="roomDefineTool"
+                              Visibility="Hidden"/>
+            <v:ItemCreateTool x:Name="itemCreateTool"
                               Visibility="Hidden"/>
         </Grid>
     </ScrollViewer>

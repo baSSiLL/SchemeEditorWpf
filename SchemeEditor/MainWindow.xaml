@@ -1,7 +1,7 @@
 ﻿<Window x:Class="SchemeEditor.MainWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        Title="Scheme Editor" Height="350" Width="525"
+        Title="Scheme Editor" Height="500" Width="800"
         xmlns:v="clr-namespace:SchemeEditor.View">
     <DockPanel>
         <Menu DockPanel.Dock="Top">
@@ -28,6 +28,10 @@
                 <ToggleButton ToolTip="Define rooms"
                               Checked="RoomTool_Checked">
                     Room
+                </ToggleButton>
+                <ToggleButton ToolTip="Create items"
+                              Checked="ItemTool_Checked">
+                    Item
                 </ToggleButton>
             </StackPanel>
         </DockPanel>

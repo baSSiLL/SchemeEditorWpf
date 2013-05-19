@@ -29,9 +29,11 @@ namespace SchemeEditor.View
 
             walls.CollectionChanged += walls_CollectionChanged;
             rooms.CollectionChanged += rooms_CollectionChanged;
+            items.CollectionChanged += items_CollectionChanged;
 
             wallDrawTool.Init(this);
             roomDefineTool.Init(this);
+            itemCreateTool.Init(this);
 
             Scale = 1;
         }
@@ -78,6 +80,8 @@ namespace SchemeEditor.View
                     return EditorToolKind.WallDraw;
                 else if (activeTool == roomDefineTool)
                     return EditorToolKind.RoomDefine;
+                else if (activeTool == itemCreateTool)
+                    return EditorToolKind.ItemCreate;
                 else
                     return EditorToolKind.None;
             }
@@ -91,6 +95,9 @@ namespace SchemeEditor.View
                         break;
                     case EditorToolKind.RoomDefine:
                         newTool = roomDefineTool;
+                        break;
+                    case EditorToolKind.ItemCreate:
+                        newTool = itemCreateTool;
                         break;
                     default:
                         newTool = null;
@@ -151,6 +158,15 @@ namespace SchemeEditor.View
         {
             get { return (Geometry)GetValue(WallsPathDataProperty); }
             set { SetValue(WallsPathDataProperty, value); }
+        }
+
+        public static readonly DependencyProperty ItemRadiusProperty =
+            DependencyProperty.Register("ItemRadius", typeof(double), typeof(Editor));
+
+        public double ItemRadius
+        {
+            get { return (double)GetValue(ItemRadiusProperty); }
+            set { SetValue(ItemRadiusProperty, value); }
         }
 
         protected override void OnPreviewMouseWheel(MouseWheelEventArgs e)
@@ -219,10 +235,12 @@ namespace SchemeEditor.View
                 var scaleTransform = new ScaleTransform { ScaleX = scale, ScaleY = scale };
                 background.LayoutTransform = scaleTransform;
                 roomVisuals.LayoutTransform = scaleTransform;
+                itemVisuals.LayoutTransform = scaleTransform;
                 wallsPath.LayoutTransform = scaleTransform;
                 wallDrawTool.LayoutTransform = scaleTransform;
                 roomDefineTool.LayoutTransform = scaleTransform;
                 WallThickness = 3 / scale;
+                ItemRadius = 5 / scale;
 
                 if (ScaleChanged != null)
                 {
@@ -254,6 +272,17 @@ namespace SchemeEditor.View
         void rooms_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
         {
             UpdateRoomVisuals();
+        }
+
+        public IList<Item> Items
+        {
+            get { return items; }
+        }
+        private readonly ObservableCollection<Item> items = new ObservableCollection<Item>();
+
+        void items_CollectionChanged(object sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            UpdateItemVisuals();
         }
 
         public static Geometry BuildWallsGeometry(IEnumerable<Wall> walls)
@@ -288,6 +317,20 @@ namespace SchemeEditor.View
             return Geometry.Parse(sb.ToString());
         }
 
+        public Room GetRoomFromPosition(Point pos)
+        {
+            int index = 0;
+            foreach (UIElement roomVisual in roomVisuals.Children)
+            {
+                if (roomVisual.InputHitTest(pos) != null)
+                    return Rooms[index];
+
+                index++;
+            }
+
+            return null;
+        }
+
         private void UpdateRoomVisuals()
         {
             roomVisuals.Children.Clear();
@@ -307,6 +350,37 @@ namespace SchemeEditor.View
                 ToolTip = room.Title
             };
 
+            return path;
+        }
+
+        private void UpdateItemVisuals()
+        {
+            itemVisuals.Children.Clear();
+            foreach (var item in Items.OfType<CoordinateItem>())
+            {
+                itemVisuals.Children.Add(BuildItemVisual(item));
+            }
+        }
+
+        private UIElement BuildItemVisual(CoordinateItem item)
+        {
+            var binding = new Binding
+            {
+                Path = new PropertyPath("ItemRadius"),
+                Source = this
+            };
+            var geometry = new EllipseGeometry
+                {
+                    Center = item.Location,
+                };
+            BindingOperations.SetBinding(geometry, EllipseGeometry.RadiusXProperty, binding);
+            BindingOperations.SetBinding(geometry, EllipseGeometry.RadiusYProperty, binding);
+            var path = new Path
+            {
+                Fill = new SolidColorBrush(Colors.Blue),
+                Data = geometry,
+                ToolTip = item.Title
+            };
             return path;
         }
 

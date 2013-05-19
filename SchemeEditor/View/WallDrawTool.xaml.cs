@@ -85,9 +85,17 @@ namespace SchemeEditor.View
 
         public new bool MouseMove(Point pos)
         {
-            pos = CorrectPosition(pos);
-            PlaceTempWall(pos);
-            return true;
+            if (LastPoint != null)
+            {
+                pos = CorrectPosition(pos);
+                PlaceTempWall(pos);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+
         }
 
         public new bool KeyDown(Key key)

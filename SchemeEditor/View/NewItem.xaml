@@ -1,0 +1,42 @@
+﻿<Window x:Class="SchemeEditor.View.NewItem"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        Title="New Item" SizeToContent="WidthAndHeight">
+    <StackPanel Orientation="Vertical"
+                Margin="10">
+        <Label Name="label"
+               FontSize="14"/>
+        <StackPanel Orientation="Horizontal"
+                    Margin="0,10,0,0">
+            <Label Content="Title" Width="100"/>
+            <TextBox Name="titleBox" Width="300"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal"
+                    Margin="0,10,0,0">
+            <Label Content="QR Code" Width="100"/>
+            <TextBox Name="qrCodeBox" Width="300"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal"
+                    Margin="0,10,0,0">
+            <CheckBox Content="Visible"
+                      Name="visibleBox"
+                      IsChecked="False"/>
+            <CheckBox Content="SpecificLocation"
+                      Margin="20,0,0,0"
+                      Name="specificLocationBox"
+                      IsChecked="False"/>
+        </StackPanel>
+        <StackPanel Orientation="Horizontal"
+                    HorizontalAlignment="Center"
+                    Margin="0,10,0,0">
+            <Button Content="OK"
+                    IsDefault="True"
+                    Width="100"
+                    Click="OK_Click"/>
+            <Button Content="Cancel"
+                    IsCancel="True"
+                    Width="100"
+                    Margin="10,0,0,0"/>
+        </StackPanel>
+    </StackPanel>
+</Window>

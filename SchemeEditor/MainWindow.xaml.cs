@@ -54,6 +54,12 @@ namespace SchemeEditor
             UpdateToolsState(sender);
         }
 
+        private void ItemTool_Checked(object sender, RoutedEventArgs e)
+        {
+            editor.ActiveToolKind = View.EditorToolKind.ItemCreate;
+            UpdateToolsState(sender);
+        }
+
         private void UpdateToolsState(object sender)
         {
             foreach (var toolButton in tools.Children.OfType<ToggleButton>())
@@ -75,7 +81,7 @@ namespace SchemeEditor
             var scheme = new Scheme
             {
                 Rooms = editor.Rooms.ToArray(),
-                Items = new RoomItem[0]
+                Items = editor.Items.ToArray()
             };
 
             var dialog = new SaveFileDialog

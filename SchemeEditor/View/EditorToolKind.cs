@@ -10,6 +10,7 @@ namespace SchemeEditor.View
     {
         None,
         WallDraw,
-        RoomDefine
+        RoomDefine,
+        ItemCreate
     }
 }
