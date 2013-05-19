@@ -160,6 +160,15 @@ namespace SchemeEditor.View
             set { SetValue(WallsPathDataProperty, value); }
         }
 
+        public static readonly DependencyProperty DoorsPathDataProperty =
+            DependencyProperty.Register("DoorsPathData", typeof(Geometry), typeof(Editor));
+
+        public Geometry DoorsPathData
+        {
+            get { return (Geometry)GetValue(DoorsPathDataProperty); }
+            set { SetValue(DoorsPathDataProperty, value); }
+        }
+
         public static readonly DependencyProperty ItemRadiusProperty =
             DependencyProperty.Register("ItemRadius", typeof(double), typeof(Editor));
 
@@ -237,6 +246,7 @@ namespace SchemeEditor.View
                 roomVisuals.LayoutTransform = scaleTransform;
                 itemVisuals.LayoutTransform = scaleTransform;
                 wallsPath.LayoutTransform = scaleTransform;
+                doorsPath.LayoutTransform = scaleTransform;
                 wallDrawTool.LayoutTransform = scaleTransform;
                 roomDefineTool.LayoutTransform = scaleTransform;
                 WallThickness = 3 / scale;
@@ -298,7 +308,8 @@ namespace SchemeEditor.View
 
         private void UpdateWallsPath()
         {
-            WallsPathData = BuildWallsGeometry(Walls);
+            WallsPathData = BuildWallsGeometry(Walls.Where(w => !w.IsDoor));
+            DoorsPathData = BuildWallsGeometry(Walls.Where(w => w.IsDoor));
         }
 
         public static Geometry BuildRoomGeometry(Room room)

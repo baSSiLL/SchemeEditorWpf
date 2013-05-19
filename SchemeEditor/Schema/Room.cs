@@ -64,6 +64,10 @@ namespace SchemeEditor.Schema
                 var first = traversed.First();
                 traversed.RemoveAt(0);
                 points.Add(first.Start);
+                if (first.IsDoor)
+                {
+                    points.Add(new Point(-1, -1));
+                }
                 points.Add(first.End);
                 var current = first.End;
                 while (traversed.Any())
@@ -73,6 +77,10 @@ namespace SchemeEditor.Schema
                     {
                         var wall = traversed[index];
                         traversed.RemoveAt(index);
+                        if (wall.IsDoor)
+                        {
+                            points.Add(new Point(-1, -1));
+                        }
                         points.Add(wall.End);
                         current = wall.End;
                     }
@@ -83,6 +91,10 @@ namespace SchemeEditor.Schema
                         {
                             var wall = traversed[index];
                             traversed.RemoveAt(index);
+                            if (wall.IsDoor)
+                            {
+                                points.Add(new Point(-1, -1));
+                            }
                             points.Add(wall.Start);
                             current = wall.Start;
                         }

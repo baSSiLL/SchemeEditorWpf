@@ -119,6 +119,19 @@ namespace SchemeEditor.View
 
         public new bool KeyDown(Key key)
         {
+            switch (key)
+            {
+                case Key.Z:
+                    if ((Keyboard.Modifiers & ModifierKeys.Control) == ModifierKeys.Control)
+                    {
+                        if (editor.Rooms.Any())
+                        {
+                            editor.Rooms.RemoveAt(editor.Rooms.Count - 1);
+                        }
+                        return true;
+                    }
+                    break;
+            }
             return false;
         }
 

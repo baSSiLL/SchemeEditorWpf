@@ -18,6 +18,11 @@
                    VerticalAlignment="Top">
             </Image>
             <Grid Name="roomVisuals"/>
+            <Path Name="doorsPath"
+                  StrokeThickness="{Binding WallThickness, RelativeSource={RelativeSource AncestorType=UserControl}}"
+                  Stroke="YellowGreen"
+                  StrokeDashArray="1 1"
+                  Data="{Binding DoorsPathData, RelativeSource={RelativeSource AncestorType=UserControl}}"/>
             <Path Name="wallsPath"
                   StrokeThickness="{Binding WallThickness, RelativeSource={RelativeSource AncestorType=UserControl}}"
                   Stroke="YellowGreen"

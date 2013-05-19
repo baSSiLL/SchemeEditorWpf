@@ -11,6 +11,7 @@ namespace SchemeEditor.Schema
     {
         public Point Start { get; set; }
         public Point End { get; set; }
+        public bool IsDoor { get; set; }
 
         public override bool Equals(object obj)
         {

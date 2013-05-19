@@ -134,7 +134,12 @@ namespace SchemeEditor.View
             }
             else
             {
-                editor.Walls.Add(new Wall { Start = LastPoint.Value, End = position });
+                var wall = new Wall { Start = LastPoint.Value, End = position };
+                if ((Keyboard.Modifiers & ModifierKeys.Shift) == ModifierKeys.Shift)
+                {
+                    wall.IsDoor = true;
+                }
+                editor.Walls.Add(wall);
                 LastPoint = position;
             }
             TempWallData = null;
